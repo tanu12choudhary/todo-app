@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Todo App</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .container {
+      background: #fff;
+      padding: 20px;
+      width: 350px;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin-bottom: 10px;
+      padding: 8px;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+    .message {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Todo App</h2>
+    <input type="text" id="title" placeholder="Enter title" />
+    <textarea id="description" placeholder="Enter description"></textarea>
+    <button onclick="addTodo()">Add Todo</button>
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    async function addTodo() {
+      const title = document.getElementById('title').value;
+      const description = document.getElementById('description').value;
+      const messageDiv = document.getElementById('message');
+
+      if (!title || !description) {
+        messageDiv.style.color = 'red';
+        messageDiv.innerText = 'Please fill all fields';
+        return;
+      }
+
+      try {
+        const response = await fetch('http://localhost:3000/api/v1/createTodo', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ title, description })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+          messageDiv.style.color = 'green';
+          messageDiv.innerText = 'Todo created successfully';
+          document.getElementById('title').value = '';
+          document.getElementById('description').value = '';
+        } else {
+          messageDiv.style.color = 'red';
+          messageDiv.innerText = 'Error creating todo';
+        }
+      } catch (error) {
+        messageDiv.style.color = 'red';
+        messageDiv.innerText = 'Server error';
+        console.error(error);
+      }
+    }
+  </script>
+</body>
+</html>
